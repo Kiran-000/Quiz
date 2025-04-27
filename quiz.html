@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QuizQuest India - Test Your Knowledge!</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary: #6c5ce7;
+        --primary-dark: #5649c0;
+        --secondary: #00cec9;
+        --text: #2d3436;
+        --text-light: #636e72;
+        --bg: #f5f6fa;
+        --card-bg: #ffffff;
+        --correct: #00b894;
+        --incorrect: #d63031;
+        --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        background-color: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .app-container {
+        width: 100%;
+        max-width: 400px;
+        height: 700px;
+        background: var(--card-bg);
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .header {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        padding: 24px 20px;
+        text-align: center;
+        position: relative;
+      }
+
+      .header h1 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .header p {
+        font-size: 0.8rem;
+        opacity: 0.9;
+      }
+
+      .back-btn {
+        position: absolute;
+        left: 20px;
+        top: 24px;
+        background: rgba(255, 255, 255, 0.2);
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+
+      .content {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        position: relative;
+      }
+
+      /* Name Input Screen */
+      .name-section {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .name-section h1 {
+        font-size: 1.8rem;
+        margin-bottom: 16px;
+        color: var(--primary);
+      }
+
+      .name-section p {
+        color: var(--text-light);
+        margin-bottom: 32px;
+        font-size: 0.9rem;
+      }
+
+      .input-field {
+        position: relative;
+        margin-bottom: 24px;
+      }
+
+      .input-field input {
+        width: 100%;
+        padding: 16px 20px;
+        border-radius: 12px;
+        border: 1px solid #dfe6e9;
+        font-size: 1rem;
+        transition: all 0.3s;
+      }
+
+      .input-field input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+      }
+
+      .btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 16px;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+      }
+
+      .btn:active {
+        transform: translateY(0);
+      }
+
+      /* Category Selection */
+      .category-section {
+        display: none;
+      }
+
+      .category-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-top: 24px;
+      }
+
+      .category-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: var(--shadow);
+        border: 1px solid #f1f2f6;
+      }
+
+      .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      .category-icon {
+        font-size: 2rem;
+        margin-bottom: 12px;
+        color: var(--primary);
+      }
+
+      .category-name {
+        font-weight: 500;
+        font-size: 0.9rem;
+      }
+
+      /* Quiz Screen */
+      .quiz-section {
+        display: none;
+      }
+
+      .quiz-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+
+      .quiz-progress {
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+
+      .quiz-timer {
+        background: rgba(214, 48, 49, 0.1);
+        color: var(--incorrect);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .quiz-timer i {
+        font-size: 0.8rem;
+      }
+
+      .progress-bar {
+        height: 6px;
+        background: #dfe6e9;
+        border-radius: 3px;
+        margin: 16px 0;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        width: 0%;
+        transition: width 0.3s;
+      }
+
+      .question {
+        font-size: 1.2rem;
+        font-weight: 500;
+        margin-bottom: 24px;
+        line-height: 1.4;
+      }
+
+      .options {
+        display: grid;
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+
+      .option {
+        background: white;
+        border: 1px solid #dfe6e9;
+        border-radius: 12px;
+        padding: 16px;
+        text-align: left;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.95rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .option:hover {
+        border-color: var(--primary);
+      }
+
+      .option.correct {
+        background: rgba(0, 184, 148, 0.1);
+        border-color: var(--correct);
+        color: var(--correct);
+      }
+
+      .option.incorrect {
+        background: rgba(214, 48, 49, 0.1);
+        border-color: var(--incorrect);
+        color: var(--incorrect);
+      }
+
+      .option.disabled {
+        pointer-events: none;
+        opacity: 0.7;
+      }
+
+      .next-btn {
+        display: none;
+        margin-top: 16px;
+      }
+
+      /* Score Screen */
+      .score-section {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        text-align: center;
+      }
+
+      .score-icon {
+        font-size: 5rem;
+        color: var(--primary);
+        margin-bottom: 24px;
+      }
+
+      .score-text {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .score-details {
+        color: var(--text-light);
+        margin-bottom: 32px;
+        font-size: 1rem;
+      }
+
+      .score-result {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+      }
+
+      /* Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .fade-in {
+        animation: fadeIn 0.5s ease forwards;
+      }
+
+      /* Responsive */
+      @media (max-width: 480px) {
+        .app-container {
+          height: 100vh;
+          max-height: 700px;
+          border-radius: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <div class="header">
+        <div class="back-btn" id="back-btn" style="display: none">
+          <i class="fas fa-arrow-left"></i>
+        </div>
+        <h1>QuizQuest India</h1>
+        <p>Test your knowledge!</p>
+      </div>
+
+      <div class="content">
+        <!-- Name Input Screen -->
+        <div class="name-section" id="name-section">
+          <h1>Welcome to QuizQuest!</h1>
+          <p>Enter your name to begin the challenge</p>
+          <div class="input-field">
+            <input
+              type="text"
+              id="name"
+              placeholder="Your name"
+              autocomplete="off"
+            />
+          </div>
+          <button class="btn" onclick="startQuiz()">
+            <i class="fas fa-play"></i> Start Quiz
+          </button>
+        </div>
+
+        <!-- Category Selection -->
+        <div class="category-section" id="category-selection">
+          <h2>Choose a Category</h2>
+          <p>Select your area of interest</p>
+          <div class="category-grid">
+            <div
+              class="category-card fade-in"
+              onclick="selectCategory('movies')"
+            >
+              <div class="category-icon"><i class="fas fa-film"></i></div>
+              <div class="category-name">Movies</div>
+            </div>
+            <div
+              class="category-card fade-in"
+              onclick="selectCategory('cricket')"
+            >
+              <div class="category-icon"><i class="fas fa-cricket"></i></div>
+              <div class="category-name">Cricket</div>
+            </div>
+            <div
+              class="category-card fade-in"
+              onclick="selectCategory('football')"
+            >
+              <div class="category-icon"><i class="fas fa-futbol"></i></div>
+              <div class="category-name">Football</div>
+            </div>
+            <div
+              class="category-card fade-in"
+              onclick="selectCategory('news')"
+            >
+              <div class="category-icon"><i class="fas fa-newspaper"></i></div>
+              <div class="category-name">Latest News</div>
+            </div>
+            <div
+              class="category-card fade-in"
+              onclick="selectCategory('music')"
+            >
+              <div class="category-icon"><i class="fas fa-music"></i></div>
+              <div class="category-name">Music</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div class="quiz-section" id="quiz">
+          <div class="quiz-header">
+            <div class="quiz-progress" id="progress">Question 1/5</div>
+            <div class="quiz-timer" id="timer">
+              <i class="fas fa-clock"></i> <span>20</span>
+            </div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-bar-fill"></div>
+          </div>
+          <div class="question" id="question">Loading question...</div>
+          <div class="options">
+            <div class="option" onclick="selectOption(0)"></div>
+            <div class="option" onclick="selectOption(1)"></div>
+            <div class="option" onclick="selectOption(2)"></div>
+            <div class="option" onclick="selectOption(3)"></div>
+          </div>
+          <button class="btn next-btn" id="next-btn" onclick="nextQuestion()">
+            Next Question <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+
+        <!-- Score Screen -->
+        <div class="score-section" id="score-section">
+          <div class="score-icon">
+            <i class="fas fa-trophy"></i>
+          </div>
+          <div class="score-text">Quiz Completed!</div>
+          <div class="score-result" id="score-result">4/5</div>
+          <div class="score-details" id="score-details">
+            Great job! You know your stuff!
+          </div>
+          <button class="btn" onclick="restartQuiz()">
+            <i class="fas fa-redo"></i> Play Again
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const quizData = {
+        movies: [
+          {
+            question: "Who is known as the 'Megastar' of Telugu cinema?",
+            options: [
+              "Nagarjuna",
+              "Chiranjeevi",
+              "Mahesh Babu",
+              "Pawan Kalyan",
+            ],
+            answer: 1,
+          },
+          {
+            question:
+              "Which movie won the Best Film at 2022 SIIMA Awards (Telugu)?",
+            options: ["Pushpa", "RRR", "Akhanda", "Radhe Shyam"],
+            answer: 1,
+          },
+          {
+            question: "Director of 'Baahubali' series?",
+            options: ["Sukumar", "Trivikram", "Rajamouli", "Puri Jagannadh"],
+            answer: 2,
+          },
+          {
+            question: "Which actor played 'Bheem' in RRR?",
+            options: [
+              "NTR Jr.",
+              "Ram Charan",
+              "Allu Arjun",
+              "Vijay Deverakonda",
+            ],
+            answer: 0,
+          },
+          {
+            question: "Samantha starred in which 2021 blockbuster?",
+            options: ["Shaakuntalam", "Jaanu", "Pushpa", "Family Man 2"],
+            answer: 2,
+          },
+        ],
+        cricket: [
+          {
+            question: "Who is called the 'God of Cricket' in India?",
+            options: [
+              "Virat Kohli",
+              "MS Dhoni",
+              "Sachin Tendulkar",
+              "Rohit Sharma",
+            ],
+            answer: 2,
+          },
+          {
+            question: "Which IPL team has won the most titles?",
+            options: ["CSK", "MI", "RCB", "KKR"],
+            answer: 1,
+          },
+          {
+            question: "Who was the captain of India in 2023 Cricket World Cup?",
+            options: [
+              "KL Rahul",
+              "Rohit Sharma",
+              "Hardik Pandya",
+              "Virat Kohli",
+            ],
+            answer: 1,
+          },
+          {
+            question: "Where is Eden Gardens located?",
+            options: ["Mumbai", "Delhi", "Kolkata", "Chennai"],
+            answer: 2,
+          },
+          {
+            question: "Who won Orange Cap in IPL 2022?",
+            options: [
+              "Jos Buttler",
+              "KL Rahul",
+              "Ruturaj Gaikwad",
+              "David Warner",
+            ],
+            answer: 0,
+          },
+        ],
+        football: [
+          {
+            question: "Who won the 2022 FIFA World Cup?",
+            options: ["France", "Argentina", "Brazil", "Germany"],
+            answer: 1,
+          },
+          {
+            question:
+              "Which player has the most goals in the history of the FIFA World Cup?",
+            options: [
+              "Cristiano Ronaldo",
+              "Lionel Messi",
+              "Miroslav Klose",
+              "Ronaldo Nazario",
+            ],
+            answer: 2,
+          },
+          {
+            question: "Which club did Lionel Messi join in 2021?",
+            options: [
+              "Barcelona",
+              "Paris Saint-Germain",
+              "Manchester City",
+              "Juventus",
+            ],
+            answer: 1,
+          },
+          {
+            question: "Which country is the host of the 2026 FIFA World Cup?",
+            options: ["Qatar", "USA", "Canada & Mexico", "Russia"],
+            answer: 2,
+          },
+          {
+            question: "Which footballer is known as 'The Egyptian King'?",
+            options: [
+              "Mohamed Salah",
+              "Riyad Mahrez",
+              "Sadio Mane",
+              "Kylian Mbappé",
+            ],
+            answer: 0,
+          },
+        ],
+        news: [
+          {
+            question: "Current President of India (2025)?",
+            options: [
+              "Droupadi Murmu",
+              "Narendra Modi",
+              "Amit Shah",
+              "Ram Nath Kovind",
+            ],
+            answer: 0,
+          },
+          {
+            question: "Which Indian city hosted G20 Summit 2023?",
+            options: ["Mumbai", "New Delhi", "Hyderabad", "Bangalore"],
+            answer: 1,
+          },
+          {
+            question: "Who won 2024 Lok Sabha elections?",
+            options: ["BJP", "Congress", "AAP", "TMC"],
+            answer: 0,
+          },
+          {
+            question: "New Chief Minister of Telangana?",
+            options: [
+              "K. Chandrashekar Rao",
+              "Ashok Gehlot",
+              "Yogi Adityanath",
+              "Arvind Kejriwal",
+            ],
+            answer: 0,
+          },
+          {
+            question:
+              "Which Bollywood actress recently turned into a producer?",
+            options: [
+              "Alia Bhatt",
+              "Deepika Padukone",
+              "Kareena Kapoor",
+              "Priyanka Chopra",
+            ],
+            answer: 0,
+          },
+        ],
+        music: [
+          {
+            question: "Which music director composed for 'RRR'?",
+            options: [
+              "A. R. Rahman",
+              "M. M. Keeravani",
+              "Anirudh",
+              "Ilaiyaraaja",
+            ],
+            answer: 1,
+          },
+          {
+            question: "Who is the famous playback singer of 'Tum Hi Ho'?",
+            options: [
+              "Arijit Singh",
+              "Mohit Chauhan",
+              "Sonu Nigam",
+              "Atif Aslam",
+            ],
+            answer: 0,
+          },
+          {
+            question: "Which Bollywood movie features the song 'Shallow'?",
+            options: ["Gully Boy", "Aashiqui 2", "Rock On", "Lady Gaga"],
+            answer: 3,
+          },
+          {
+            question: "Which Telugu movie features 'Butta Bomma' song?",
+            options: ["Ala Vaikunthapurramuloo", "Pushpa", "RRR", "Baahubali"],
+            answer: 0,
+          },
+          {
+            question:
+              "Which legendary singer is known as 'Nightingale of India'?",
+            options: [
+              "Lata Mangeshkar",
+              "Kishore Kumar",
+              "Mukesh",
+              "Mohammad Rafi",
+            ],
+            answer: 0,
+          },
+        ],
+      };
+
+      let userName = "";
+      let selectedCategory = "";
+      let currentQuestionIndex = 0;
+      let currentScore = 0;
+      let timer;
+      let timeLeft = 20;
+
+      // DOM elements
+      const nameSection = document.getElementById("name-section");
+      const categorySection = document.getElementById("category-selection");
+      const quizSection = document.getElementById("quiz");
+      const scoreSection = document.getElementById("score-section");
+      const backBtn = document.getElementById("back-btn");
+      const nextBtn = document.getElementById("next-btn");
+
+      // Back button functionality
+      backBtn.addEventListener("click", function () {
+        if (quizSection.style.display === "block") {
+          // If in quiz, go back to categories
+          quizSection.style.display = "none";
+          categorySection.style.display = "block";
+          backBtn.style.display = "none";
+          clearInterval(timer);
+        } else if (categorySection.style.display === "block") {
+          // If in categories, go back to name input
+          categorySection.style.display = "none";
+          nameSection.style.display = "block";
+          backBtn.style.display = "none";
+        }
+      });
+
+      function startQuiz() {
+        userName = document.getElementById("name").value.trim();
+        if (!userName) {
+          alert("Please enter your name to begin!");
+          return;
+        }
+        nameSection.style.display = "none";
+        categorySection.style.display = "block";
+        backBtn.style.display = "flex";
+      }
+
+      function selectCategory(category) {
+        selectedCategory = category;
+        currentQuestionIndex = 0;
+        currentScore = 0;
+        categorySection.style.display = "none";
+        quizSection.style.display = "block";
+        startQuestion();
+      }
+
+      function startQuestion() {
+        const questionData = quizData[selectedCategory][currentQuestionIndex];
+        document.getElementById("question").textContent = questionData.question;
+        const options = document.querySelectorAll(".option");
+        
+        questionData.options.forEach((option, index) => {
+          options[index].textContent = option;
+          options[index].className = "option";
+        });
+
+        timeLeft = 20;
+        document.querySelector("#timer span").textContent = timeLeft;
+        document.getElementById("progress-bar-fill").style.width = "0%";
+        document.getElementById("progress").textContent = `Question ${
+          currentQuestionIndex + 1
+        }/5`;
+        
+        nextBtn.style.display = "none";
+        startTimer();
+      }
+
+      function startTimer() {
+        clearInterval(timer);
+        timer = setInterval(() => {
+          timeLeft--;
+          document.querySelector("#timer span").textContent = timeLeft;
+          document.getElementById("progress-bar-fill").style.width =
+            100 - (timeLeft / 20) * 100 + "%";
+
+          if (timeLeft <= 0) {
+            clearInterval(timer);
+            handleTimeOut();
+          }
+        }, 1000);
+      }
+
+      function handleTimeOut() {
+        const options = document.querySelectorAll(".option");
+        const correctAnswer =
+          quizData[selectedCategory][currentQuestionIndex].answer;
+        
+        options.forEach((option, index) => {
+          option.classList.add("disabled");
+          if (index === correctAnswer) {
+            option.classList.add("correct");
+          }
+        });
+        
+        nextBtn.style.display = "block";
+      }
+
+      function selectOption(index) {
+        clearInterval(timer);
+        const options = document.querySelectorAll(".option");
+        const correctAnswer =
+          quizData[selectedCategory][currentQuestionIndex].answer;
+        
+        options.forEach((option) => option.classList.add("disabled"));
+        
+        if (index === correctAnswer) {
+          currentScore++;
+          options[index].classList.add("correct");
+        } else {
+          options[index].classList.add("incorrect");
+          options[correctAnswer].classList.add("correct");
+        }
+        
+        nextBtn.style.display = "block";
+      }
+
+      function nextQuestion() {
+        if (currentQuestionIndex < 4) {
+          currentQuestionIndex++;
+          startQuestion();
+        } else {
+          showScore();
+        }
+      }
+
+      function showScore() {
+        quizSection.style.display = "none";
+        scoreSection.style.display = "flex";
+        backBtn.style.display = "none";
+        
+        document.getElementById("score-result").textContent = 
+          `${currentScore}/5`;
+          
+        let message = "";
+        if (currentScore === 5) {
+          message = "Perfect! You're a genius!";
+        } else if (currentScore >= 3) {
+          message = "Well done! Great knowledge!";
+        } else {
+          message = "Good try! Keep learning!";
+        }
+        document.getElementById("score-details").textContent = message;
+      }
+
+      function restartQuiz() {
+        scoreSection.style.display = "none";
+        categorySection.style.display = "block";
+        backBtn.style.display = "flex";
+      }
+    </script>
+  </body>
+</html>
